@@ -1,13 +1,39 @@
 <!DOCTYPE html>
-<html>
-  <body>
-    <h1>Hello World</h1>
-    <script>
-      fetch("/api/weather")
-        .then(res => res.json())
-        .then(data => {
-          console.log("Hourly weather data:", data.hourly);
-        });
-    </script>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather App</title>
+</head>
+<body>
+  <h1>Weather Forecast</h1>
+  <div id="weather"></div>
+
+  <script>
+    async function getWeather() {
+      // Call Open-Meteo API directly
+      const url = "https://api.open-meteo.com/v1/forecast?latitude=-29.9059&longitude=-71.2501&hourly=temperature_2m";
+      const res = await fetch(url);
+      const data = await res.json();
+
+      // Grab the container
+      const container = document.getElementById("weather");
+
+      // Extract hourly temperature
+      const times = data.hourly.time;
+      const temps = data.hourly.temperature_2m;
+
+      // Show first 10 entries
+      let html = "<h2>Hourly Temperature (°C)</h2><ul>";
+      for (let i = 0; i < 10; i++) {
+        html += `<li>${times[i]} → ${temps[i]} °C</li>`;
+      }
+      html += "</ul>";
+
+      // Insert into the page
+      container.innerHTML = html;
+    }
+
+    getWeather();
+  </script>
+</body>
 </html>
