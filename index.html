@@ -1,1 +1,15 @@
-<p>test weather api</p>
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Hello World</h1>
+    <script>
+      async function getWeather() {
+        const url = "https://api.open-meteo.com/v1/forecast?latitude=-29.9059&longitude=-71.2501&hourly=temperature_2m";
+        const res = await fetch(url);
+        const data = await res.json();
+        console.log("Raw Open-Meteo data:", data);
+      }
+      getWeather();
+    </script>
+  </body>
+</html>
