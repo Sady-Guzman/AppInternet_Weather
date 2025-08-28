@@ -1,89 +1,66 @@
 body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
-      min-height: 100vh;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 30px;
-      color: #333;
-    }
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #eef6f9;
+  margin: 0;
+  padding: 20px;
+}
 
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-      color: #222;
-    }
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
 
-    #city {
-      padding: 10px 15px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      margin-right: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      outline: none;
-    }
+.search-box {
+  margin-bottom: 20px;
+}
 
-    button {
-      padding: 10px 20px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
+input {
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #aaa;
+  border-radius: 8px;
+  width: 200px;
+}
 
-    button:hover {
-      background-color: #45a049;
-    }
+button {
+  padding: 10px 15px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  background: #4cafef;
+  color: white;
+  cursor: pointer;
+  margin-left: 5px;
+}
 
-    #results, #weather {
-      margin-top: 30px;
-      width: 100%;
-      max-width: 600px;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+button:hover {
+  background: #3898db;
+}
 
-    ul {
-      list-style: none;
-      padding: 0;
-    }
+.forecast {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+}
 
-    li {
-      margin: 10px 0;
-    }
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  width: 180px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
 
-    li button {
-      background: #2196F3;
-      border-radius: 6px;
-      padding: 8px 15px;
-      font-size: 0.95rem;
-    }
+.card h3 {
+  margin: 0 0 10px;
+  font-size: 1.1em;
+  color: #222;
+}
 
-    li button:hover {
-      background: #1976D2;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-
-    th, td {
-      padding: 10px;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
-    }
-
-    th {
-      background: #f4f4f4;
-    }
+.card p {
+  margin: 5px 0;
+  font-size: 0.95em;
+}
