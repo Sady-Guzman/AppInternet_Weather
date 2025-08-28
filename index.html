@@ -11,6 +11,7 @@
   <input type="text" id="city" placeholder="Enter city name">
   <button onclick="searchCity()">Search</button>
 
+  <div id="results"></div>
   <div id="weather"></div>
 
   <script>
@@ -21,28 +22,40 @@
         return;
       }
 
-      // 1. Geocode city → latitude & longitude
-      const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`;
+      // 1. Geocode city → multiple results
+      const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=5`;
       const geoRes = await fetch(geoUrl);
       const geoData = await geoRes.json();
 
       if (!geoData.results || geoData.results.length === 0) {
-        document.getElementById("weather").innerHTML = "<p>City not found.</p>";
+        document.getElementById("results").innerHTML = "<p>City not found.</p>";
         return;
       }
 
-      const { latitude, longitude, name, country } = geoData.results[0];
+      // 2. Show results as clickable options
+      let html = "<h2>Select a city:</h2><ul>";
+      geoData.results.forEach(loc => {
+        html += `<li><button onclick="getWeather(${loc.latitude}, ${loc.longitude}, '${loc.name}', '${loc.country}')">
+          ${loc.name}, ${loc.country}
+        </button></li>`;
+      });
+      html += "</ul>";
 
-      // 2. Fetch weather for those coordinates
+      document.getElementById("results").innerHTML = html;
+      document.getElementById("weather").innerHTML = "";
+    }
+
+    async function getWeather(latitude, longitude, name, country) {
+      // 3. Fetch weather for chosen coordinates
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m`;
       const weatherRes = await fetch(weatherUrl);
       const weatherData = await weatherRes.json();
 
-      // 3. Extract data
+      // 4. Extract data
       const times = weatherData.hourly.time;
       const temps = weatherData.hourly.temperature_2m;
 
-      // 4. Show results (first 10 entries)
+      // 5. Show first 10 results
       let html = `<h2>Weather for ${name}, ${country}</h2><ul>`;
       for (let i = 0; i < 10; i++) {
         html += `<li>${times[i]} → ${temps[i]} °C</li>`;
