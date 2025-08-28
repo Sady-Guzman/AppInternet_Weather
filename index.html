@@ -5,35 +5,52 @@
   <title>Weather App</title>
 </head>
 <body>
-  <h1>Weather Forecast</h1>
+  <h1>Weather Search</h1>
+
+  <!-- Search Form -->
+  <input type="text" id="city" placeholder="Enter city name">
+  <button onclick="searchCity()">Search</button>
+
   <div id="weather"></div>
 
   <script>
-    async function getWeather() {
-      // Call Open-Meteo API directly
-      const url = "https://api.open-meteo.com/v1/forecast?latitude=-29.9059&longitude=-71.2501&hourly=temperature_2m";
-      const res = await fetch(url);
-      const data = await res.json();
+    async function searchCity() {
+      const city = document.getElementById("city").value;
+      if (!city) {
+        alert("Please enter a city name");
+        return;
+      }
 
-      // Grab the container
-      const container = document.getElementById("weather");
+      // 1. Geocode city → latitude & longitude
+      const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`;
+      const geoRes = await fetch(geoUrl);
+      const geoData = await geoRes.json();
 
-      // Extract hourly temperature
-      const times = data.hourly.time;
-      const temps = data.hourly.temperature_2m;
+      if (!geoData.results || geoData.results.length === 0) {
+        document.getElementById("weather").innerHTML = "<p>City not found.</p>";
+        return;
+      }
 
-      // Show first 10 entries
-      let html = "<h2>Hourly Temperature (°C)</h2><ul>";
+      const { latitude, longitude, name, country } = geoData.results[0];
+
+      // 2. Fetch weather for those coordinates
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m`;
+      const weatherRes = await fetch(weatherUrl);
+      const weatherData = await weatherRes.json();
+
+      // 3. Extract data
+      const times = weatherData.hourly.time;
+      const temps = weatherData.hourly.temperature_2m;
+
+      // 4. Show results (first 10 entries)
+      let html = `<h2>Weather for ${name}, ${country}</h2><ul>`;
       for (let i = 0; i < 10; i++) {
         html += `<li>${times[i]} → ${temps[i]} °C</li>`;
       }
       html += "</ul>";
 
-      // Insert into the page
-      container.innerHTML = html;
+      document.getElementById("weather").innerHTML = html;
     }
-
-    getWeather();
   </script>
 </body>
 </html>
