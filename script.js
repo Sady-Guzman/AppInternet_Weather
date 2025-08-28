@@ -1,59 +1,51 @@
+// Buscar ciudad en Open-Meteo Geocoding API
 async function searchCity() {
-  const city = document.getElementById("city").value;
-  if (!city) {
-	alert("Please enter a city name");
-	return;
+  const city = document.getElementById("city").value.trim();
+  if (!city) return;
+
+  const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=es&format=json`);
+  const data = await res.json();
+
+  const resultsDiv = document.getElementById("results");
+  resultsDiv.innerHTML = "";
+
+  if (!data.results || data.results.length === 0) {
+    resultsDiv.innerHTML = "<p>No se encontró la ciudad.</p>";
+    document.getElementById("weather").innerHTML = "";
+    return;
   }
 
-  const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=5`;
-  const geoRes = await fetch(geoUrl);
-  const geoData = await geoRes.json();
+  const place = data.results[0];
+  resultsDiv.innerHTML = `<h2>${place.name}, ${place.country}</h2>`;
 
-  if (!geoData.results || geoData.results.length === 0) {
-	document.getElementById("results").innerHTML = "<p>❌ City not found.</p>";
-	return;
-  }
-
-  let html = "<h2>Select a city:</h2><ul>";
-  geoData.results.forEach(loc => {
-	html += `<li><button onclick="getWeather(${loc.latitude}, ${loc.longitude}, '${loc.name}', '${loc.country}')">
-	  ${loc.name}, ${loc.country}
-	</button></li>`;
-  });
-  html += "</ul>";
-
-  document.getElementById("results").innerHTML = html;
-  document.getElementById("weather").innerHTML = "";
+  fetchWeather(place.latitude, place.longitude);
 }
 
-async function getWeather(latitude, longitude, name, country) {
-  // Request daily forecast (max/min temperatures)
-  const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min&timezone=auto`;
-  const weatherRes = await fetch(weatherUrl);
-  const weatherData = await weatherRes.json();
+// Obtener clima de 7 días
+async function fetchWeather(lat, lon) {
+  const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_mean&timezone=auto`);
+  const data = await res.json();
 
-  const dates = weatherData.daily.time;
-  const maxTemps = weatherData.daily.temperature_2m_max;
-  const minTemps = weatherData.daily.temperature_2m_min;
+  const weatherDiv = document.getElementById("weather");
+  weatherDiv.innerHTML = "";
 
-  // Build a nice table
-  let html = `<h2>7-Day Forecast for ${name}, ${country}</h2>
-	<table>
-	  <tr>
-		<th>Date</th>
-		<th>🌡 Max (°C)</th>
-		<th>❄ Min (°C)</th>
-	  </tr>`;
+  data.daily.time.forEach((date, i) => {
+    const maxTemp = data.daily.temperature_2m_max[i];
+    const minTemp = data.daily.temperature_2m_min[i];
+    const rainProb = data.daily.precipitation_probability_mean[i];
 
-  for (let i = 0; i < dates.length; i++) {
-	html += `<tr>
-	  <td>${dates[i]}</td>
-	  <td>${maxTemps[i]}</td>
-	  <td>${minTemps[i]}</td>
-	</tr>`;
-  }
+    // Convertir fecha a dd/mm/yyyy
+    const [year, month, day] = date.split("-");
+    const formattedDate = `${day}/${month}/${year}`;
 
-  html += "</table>";
-
-  document.getElementById("weather").innerHTML = html;
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <h3>${formattedDate}</h3>
+      <p>🌡 Máx: ${maxTemp}°C</p>
+      <p>❄️ Mín: ${minTemp}°C</p>
+      <p>🌧 Prob. lluvia: ${rainProb}%</p>
+    `;
+    weatherDiv.appendChild(card);
+  });
 }
