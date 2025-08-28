@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Weather App</title>
+  <title>Clima - Pronóstico 7 días</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>🌤 Weather Search</h1>
+  <h1>🌤 Pronóstico del Clima</h1>
 
-  <div>
-    <input type="text" id="city" placeholder="Enter city name">
-    <button onclick="searchCity()">Search</button>
+  <div class="search-box">
+    <input type="text" id="city" placeholder="Ingresa una ciudad">
+    <button onclick="searchCity()">Buscar</button>
   </div>
 
   <div id="results"></div>
-  <div id="weather"></div>
+  <div id="weather" class="forecast"></div>
 
   <script src="script.js"></script>
 </body>
