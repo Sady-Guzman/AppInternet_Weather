@@ -3,13 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 30px;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #222;
+    }
+
+    #city {
+      padding: 10px 15px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      margin-right: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      outline: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #results, #weather {
+      margin-top: 30px;
+      width: 100%;
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      margin: 10px 0;
+    }
+
+    li button {
+      background: #2196F3;
+      border-radius: 6px;
+      padding: 8px 15px;
+      font-size: 0.95rem;
+    }
+
+    li button:hover {
+      background: #1976D2;
+    }
+
+    #weather ul li {
+      background: #f9f9f9;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin: 5px 0;
+    }
+  </style>
 </head>
 <body>
-  <h1>Weather Search</h1>
+  <h1>🌤 Weather Search</h1>
 
   <!-- Search Form -->
-  <input type="text" id="city" placeholder="Enter city name">
-  <button onclick="searchCity()">Search</button>
+  <div>
+    <input type="text" id="city" placeholder="Enter city name">
+    <button onclick="searchCity()">Search</button>
+  </div>
 
   <div id="results"></div>
   <div id="weather"></div>
@@ -22,17 +106,15 @@
         return;
       }
 
-      // 1. Geocode city → multiple results
       const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=5`;
       const geoRes = await fetch(geoUrl);
       const geoData = await geoRes.json();
 
       if (!geoData.results || geoData.results.length === 0) {
-        document.getElementById("results").innerHTML = "<p>City not found.</p>";
+        document.getElementById("results").innerHTML = "<p>❌ City not found.</p>";
         return;
       }
 
-      // 2. Show results as clickable options
       let html = "<h2>Select a city:</h2><ul>";
       geoData.results.forEach(loc => {
         html += `<li><button onclick="getWeather(${loc.latitude}, ${loc.longitude}, '${loc.name}', '${loc.country}')">
@@ -46,19 +128,16 @@
     }
 
     async function getWeather(latitude, longitude, name, country) {
-      // 3. Fetch weather for chosen coordinates
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m`;
       const weatherRes = await fetch(weatherUrl);
       const weatherData = await weatherRes.json();
 
-      // 4. Extract data
       const times = weatherData.hourly.time;
       const temps = weatherData.hourly.temperature_2m;
 
-      // 5. Show first 10 results
       let html = `<h2>Weather for ${name}, ${country}</h2><ul>`;
       for (let i = 0; i < 10; i++) {
-        html += `<li>${times[i]} → ${temps[i]} °C</li>`;
+        html += `<li><strong>${times[i]}</strong> → 🌡 ${temps[i]} °C</li>`;
       }
       html += "</ul>";
 
